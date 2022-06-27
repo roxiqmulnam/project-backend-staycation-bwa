@@ -1,4 +1,4 @@
-const Category = require(`../models/Category`);
+const Category = require("../models/Category");
 
 module.exports = {
   viewDashboard: (req, res) => {
@@ -18,13 +18,13 @@ module.exports = {
     const { id, name } = req.body;
     const category = await Category.findOne({ _id: id });
     category.name = name;
-    await category.save;
+    await category.save();
     res.redirect("/admin/category");
   },
   deleteCategory: async (req, res) => {
     const { id } = req.params;
     const category = await Category.findOne({ _id: id });
-    await category.remove;
+    await category.remove();
     res.redirect("/admin/category");
   },
 
