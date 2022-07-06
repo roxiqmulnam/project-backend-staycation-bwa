@@ -4,10 +4,50 @@ const Item = require("../models/Item");
 const Image = require("../models/Image");
 const Feature = require("../models/Feature");
 const Activity = require("../models/Activity");
+const Users = require("../models/Users");
 const fs = require("fs-extra");
 const path = require("path");
+const bcrypt = require("bcryptjs");
 
 module.exports = {
+  viewSignin: async (req, res) => {
+    try {
+      const alertMessage = req.flash("alertMessage");
+      const alertStatus = req.flash("alertStatus");
+      const alert = { message: alertMessage, status: alertStatus };
+      if (req.session.user == null || req.session.user == undefined) {
+        res.render("index", {
+          alert,
+          title: "Staycation | Login",
+        });
+      } else {
+        res.redirect("/admin/dashboard");
+      }
+    } catch (error) {
+      res.redirect("/admin/signin");
+    }
+  },
+  actionSignin: async (req, res) => {
+    try {
+      const { username, password } = req.body;
+      const user = await Users.findOne({ username: username });
+      if (!user) {
+        req.flash("alertMessage", "User yang anda masukan tidak ada!!");
+        req.flash("alertStatus", "danger");
+        res.redirect("/admin/signin");
+      }
+      const isPasswordMatch = await bcrypt.compare(password, user.password);
+      if (!isPasswordMatch) {
+        req.flash("alertMessage", "Password yang anda masukan tidak cocok!!");
+        req.flash("alertStatus", "danger");
+        res.redirect("/admin/signin");
+      }
+      res.redirect("/admin/dashboard");
+    } catch (error) {
+      res.redirect("/admin/signin");
+    }
+  },
+
   viewDashboard: (req, res) => {
     res.render("admin/dashboard/view_dashboard", {
       title: "Staycation | Dashboard",
@@ -460,22 +500,22 @@ module.exports = {
         activity.name = name;
         activity.type = type;
         await activity.save();
-        req.flash('alertMessage', 'Success Update activity');
-        req.flash('alertStatus', 'success');
+        req.flash("alertMessage", "Success Update activity");
+        req.flash("alertStatus", "success");
         res.redirect(`/admin/item/show-detail-item/${itemId}`);
       } else {
         await fs.unlink(path.join(`public/${activity.imageUrl}`));
         activity.name = name;
         activity.type = type;
-        activity.imageUrl = `images/${req.file.filename}`
+        activity.imageUrl = `images/${req.file.filename}`;
         await activity.save();
-        req.flash('alertMessage', 'Success Update activity');
-        req.flash('alertStatus', 'success');
+        req.flash("alertMessage", "Success Update activity");
+        req.flash("alertStatus", "success");
         res.redirect(`/admin/item/show-detail-item/${itemId}`);
       }
     } catch (error) {
-      req.flash('alertMessage', `${error.message}`);
-      req.flash('alertStatus', 'danger');
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
       res.redirect(`/admin/item/show-detail-item/${itemId}`);
     }
   },
@@ -484,7 +524,7 @@ module.exports = {
     try {
       const activity = await Activity.findOne({ _id: id });
 
-      const item = await Item.findOne({ _id: itemId }).populate('activityId');
+      const item = await Item.findOne({ _id: itemId }).populate("activityId");
       for (let i = 0; i < item.activityId.length; i++) {
         if (item.activityId[i]._id.toString() === activity._id.toString()) {
           item.activityId.pull({ _id: activity._id });
@@ -493,12 +533,12 @@ module.exports = {
       }
       await fs.unlink(path.join(`public/${activity.imageUrl}`));
       await activity.remove();
-      req.flash('alertMessage', 'Success Delete Activity');
-      req.flash('alertStatus', 'success');
+      req.flash("alertMessage", "Success Delete Activity");
+      req.flash("alertStatus", "success");
       res.redirect(`/admin/item/show-detail-item/${itemId}`);
     } catch (error) {
-      req.flash('alertMessage', `${error.message}`);
-      req.flash('alertStatus', 'danger');
+      req.flash("alertMessage", `${error.message}`);
+      req.flash("alertStatus", "danger");
       res.redirect(`/admin/item/show-detail-item/${itemId}`);
     }
   },
