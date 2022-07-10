@@ -10,6 +10,7 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 
 module.exports = {
+  // Controller Sign In 
   viewSignin: async (req, res) => {
     try {
       const alertMessage = req.flash("alertMessage");
