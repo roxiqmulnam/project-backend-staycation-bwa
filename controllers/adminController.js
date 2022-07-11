@@ -10,7 +10,7 @@ const path = require("path");
 const bcrypt = require("bcryptjs");
 
 module.exports = {
-  // Controller Sign In 
+  // Controller Sign In
   viewSignin: async (req, res) => {
     try {
       const alertMessage = req.flash("alertMessage");
@@ -43,16 +43,31 @@ module.exports = {
         req.flash("alertStatus", "danger");
         res.redirect("/admin/signin");
       }
+
+      req.session.user = {
+        id: user.id,
+        username: user.username,
+      };
+
       res.redirect("/admin/dashboard");
     } catch (error) {
       res.redirect("/admin/signin");
     }
   },
+  actionLogout: (req, res) => {
+    req.session.destroy();
+    res.redirect("/admin/signin");
+  },
 
-  viewDashboard: (req, res) => {
-    res.render("admin/dashboard/view_dashboard", {
-      title: "Staycation | Dashboard",
-    });
+  viewDashboard: async (req, res) => {
+    try {
+      res.render('admin/dashboard/view_dashboard', {
+        title: "Staycation | Dashboard",
+        user: req.session.user,
+      });
+    } catch (error) {
+      res.redirect('/admin/dashboard');
+    }
   },
 
   viewCategory: async (req, res) => {
