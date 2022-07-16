@@ -452,8 +452,8 @@ var data = [
     'documents': [
       {
         _id: mongoose.Types.ObjectId('5e96cbe292b97300fc90cee1'),
-        bookingStartDate: '12-12-2020',
-        bookingEndDate: '12-12-2020',
+        bookingStartDate: '12-12-2022',
+        bookingEndDate: '12-12-2022',
         invoice: 1231231,
         itemId: {
           _id: mongoose.Types.ObjectId('5e96cbe292b97300fc902222'),
