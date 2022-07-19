@@ -6,14 +6,18 @@ var logger = require("morgan");
 const methodOverride = require("method-override");
 const session = require("express-session");
 const flash = require("connect-flash");
+const cors = require("cors");
 // import mongoose
 const mongoose = require("mongoose");
-mongoose.connect("mongodb+srv://roxiqmm:passwordnya2424@cluster0.stw4rk7.mongodb.net/db_staycation?retryWrites=true&w=majority", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  useCreateIndex: true,
-  useFindAndModify: false,
-});
+mongoose.connect(
+  "mongodb+srv://roxiqmm:passwordnya2424@cluster0.stw4rk7.mongodb.net/db_staycation?retryWrites=true&w=majority",
+  {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    useFindAndModify: false,
+  }
+);
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
@@ -23,7 +27,7 @@ const adminRouter = require("./routes/admin");
 const apiRouter = require("./routes/api");
 
 var app = express();
-
+app.use(cors());
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
